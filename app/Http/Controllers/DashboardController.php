@@ -15,8 +15,8 @@ class DashboardController extends Controller
         return view('dashboard.index', [
             'title' => 'Dashboard',
             'author' => 'Firman Adi Pratama',
-            'siswas' => Siswa::all()->count(),
-            'bukus' => Buku::all()->sum('jumlah'),
+            'siswas' => Siswa::count(),
+            'bukus' => Buku::sum('jumlah'),
             'pinjams' => $dataPeminjaman->where('status', 'pinjam')->count(),
             'kembalis' => $dataPeminjaman->where('status', 'kembali')->count()
         ]);

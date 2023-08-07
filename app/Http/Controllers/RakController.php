@@ -5,8 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Rak;
 use App\Http\Requests\StoreRakRequest;
 use App\Http\Requests\UpdateRakRequest;
-use \Cviebrock\EloquentSluggable\Services\SlugService;
-use Illuminate\Http\Request;
 
 class RakController extends Controller
 {
@@ -45,27 +43,13 @@ class RakController extends Controller
      */
     public function store(StoreRakRequest $request)
     {
-        $validatedData = $request->validate([
-            'namaRak' => 'required',
-            'slug' => 'required|unique:raks',
-        ]);
+        $validatedData = $request->validated();
 
         Rak::create($validatedData);
 
         alert()->success('Buat Data Sukses!', 'Data Rak telah ditambahkan.');
 
         return redirect('/dashboard/data-rak');
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Rak  $rak
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Rak $rak)
-    {
-        //
     }
 
     /**
@@ -92,39 +76,20 @@ class RakController extends Controller
      */
     public function update(UpdateRakRequest $request, Rak $data_rak)
     {
-        $rules = [];
-
-        if ($request->namaRak != $data_rak->namaRak) {
-            $rules['namaRak'] = 'required';
-        }
+        $validatedData = $request->validated();
 
         if ($request->slug != $data_rak->slug) {
-            $rules['slug'] = 'required|unique:raks';
-        }
+            $req = $request->validate([
+                'slug' => 'required|unique:raks'
+            ]);
 
-        $validatedData = $request->validate($rules);
+            $validatedData['slug'] = $req['slug'];
+        }
 
         Rak::where('id', $data_rak->id)->update($validatedData);
 
         alert()->success('Ubah Data Sukses!', 'Data Rak telah diubah.');
 
         return redirect('/dashboard/data-rak');
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Rak  $rak
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Rak $rak)
-    {
-        //
-    }
-
-    public function buatSlug2(Request $request)
-    {
-        $slug = SlugService::createSlug(Rak::class, 'slug', $request->namaRak);
-        return response()->json(['slug' => $slug]);
     }
 }

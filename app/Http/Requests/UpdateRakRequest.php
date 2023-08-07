@@ -24,7 +24,7 @@ class UpdateRakRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'namaRak' => 'required',
         ];
     }
 }

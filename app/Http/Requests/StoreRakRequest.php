@@ -24,7 +24,8 @@ class StoreRakRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'namaRak' => 'required',
+            'slug' => 'required|unique:raks',
         ];
     }
 }

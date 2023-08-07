@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -16,9 +17,10 @@ class BukuFactory extends Factory
      */
     public function definition()
     {
+        $judul = fake()->sentence(3);
         return [
-            'judul' => fake()->word(),
-            'slug' => fake()->slug(),
+            'judul' => $judul,
+            'slug' => Str::slug($judul),
             'penulis' => fake()->name(),
             'penerbit' => fake()->company(),
             'tahun' => fake()->year(),

@@ -22,7 +22,9 @@ return new class extends Migration
             $table->string('tahun');
             $table->string('isbn')->unique();
             $table->integer('jumlah');
-            $table->foreignId('rak_id');
+            $table->foreignId('rak_id')
+                ->constrained('raks')
+                ->onDelete('cascade');
             $table->timestamps();
         });
     }

@@ -24,7 +24,13 @@ class StoreBukuRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'judul' => 'required|max:255',
+            'penulis' => 'required',
+            'penerbit' => 'required',
+            'tahun' => 'required|numeric|integer|digits:4',
+            'isbn' => 'required|numeric|integer|digits:13|unique:bukus',
+            'jumlah' => 'required|numeric',
+            'rak_id' => 'required',
         ];
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -16,10 +17,11 @@ class SiswaFactory extends Factory
      */
     public function definition()
     {
+        $name = fake()->name();
         return [
             'nisn' => fake()->randomNumber(5, true) . fake()->randomNumber(5, true),
-            'nama' => fake()->name(),
-            'slug' => fake()->slug(),
+            'nama' => $name,
+            'slug' => Str::slug($name),
             'kelas' => collect(fake()->randomElements(['VII', 'VIII', 'IX'], 1))->implode(''),
             'tglLahir' => fake()->date('Y_m_d'),
             'alamat' => fake()->streetAddress(),

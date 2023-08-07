@@ -21,43 +21,46 @@ use App\Http\Controllers\RakController;
 |
 */
 
-Route::controller(LoginController::class)->group(function () {
-    Route::get('/', 'home');
-    Route::get('/login', 'index')->name('login')->middleware('guest');
-    Route::post('/login', 'authenticate');
-    Route::post('/logout', 'logout');
+Route::middleware('guest')->group(function () {
+    Route::controller(LoginController::class)->group(function () {
+        Route::get('/login', 'index')->name('login');
+        Route::post('/login', 'authenticate');
+    });
 });
 
-Route::get('/dashboard', [DashboardController::class, 'index'])->middleware('auth');
+Route::get('/', [LoginController::class, 'home']);
 
-Route::resource('/dashboard/data-siswa', SiswaController::class)->except('destroy')->middleware('auth');
+Route::group(['middleware' => 'auth', 'prefix' => 'dashboard'], function () {
+    Route::get('/', [DashboardController::class, 'index']);
 
-Route::controller(AdministratorController::class)->group(function () {
-    Route::get('/dashboard/data-administrator', 'index')->middleware('auth');
-    Route::get('/dashboard/data-administrator/create', 'create')->middleware('auth');
-    Route::post('/dashboard/data-administrator', 'store')->middleware('auth');
-});
+    Route::resource('/data-siswa', SiswaController::class)->except('destroy');
 
-Route::resource('/dashboard/data-buku', BukuController::class)->except('destroy')->middleware('auth');
+    Route::controller(AdministratorController::class)->group(function () {
+        Route::get('/data-administrator', 'index');
+        Route::get('/data-administrator/create', 'create');
+        Route::post('/data-administrator', 'store');
+    });
 
-Route::resource('/dashboard/data-rak', RakController::class)->except('destroy', 'show')->middleware('auth');
-Route::controller(RakController::class)->group(function () {
-    Route::get('/dashboard/data-rak/buatSlug2', 'buatSlug2')->middleware('auth');
-});
+    Route::resource('/data-buku', BukuController::class)->except('destroy');
 
-Route::resource('/dashboard/data-peminjaman', PeminjamanController::class)->except('destroy', 'show', 'edit', 'update')->middleware('auth');
-Route::controller(PeminjamanController::class)->group(function () {
-    Route::get('/dashboard/data-peminjaman/{peminjaman:slug}', 'menyerahkan')->middleware('auth');
-    Route::get('/dashboard/data-peminjaman/{peminjaman:slug}/perpanjang', 'perpanjang')->middleware('auth');
-});
+    Route::resource('/data-rak', RakController::class)->except('destroy', 'show');
 
-Route::controller(LaporanController::class)->group(function () {
-    Route::get('/dashboard/data-laporan', 'index')->middleware('auth');
-    Route::get('/dashboard/print/siswa', 'printSiswa')->middleware('auth');
-    Route::get('/dashboard/print/administrator', 'printUser')->middleware('auth');
-    Route::get('/dashboard/print/buku', 'printBuku')->middleware('auth');
-    Route::get('/dashboard/print/rak', 'printRak')->middleware('auth');
-    Route::get('/dashboard/print/peminjaman', 'printPeminjaman')->middleware('auth');
-    Route::get('/dashboard/print/pinjam', 'pinjam')->middleware('auth');
-    Route::get('/dashboard/print/kembali', 'kembali')->middleware('auth');
+    Route::resource('/data-peminjaman', PeminjamanController::class)->except('destroy', 'show', 'edit', 'update');
+    Route::controller(PeminjamanController::class)->group(function () {
+        Route::get('/data-peminjaman/{peminjaman:slug}', 'menyerahkan');
+        Route::get('/data-peminjaman/{peminjaman:slug}/perpanjang', 'perpanjang');
+    });
+
+    Route::controller(LaporanController::class)->group(function () {
+        Route::get('/data-laporan', 'index');
+        Route::get('/print/siswa', 'printSiswa');
+        Route::get('/print/administrator', 'printUser');
+        Route::get('/print/buku', 'printBuku');
+        Route::get('/print/rak', 'printRak');
+        Route::get('/print/peminjaman', 'printPeminjaman');
+        Route::get('/print/pinjam', 'pinjam');
+        Route::get('/print/kembali', 'kembali');
+    });
+
+    Route::post('/logout', [LoginController::class, 'logout']);
 });

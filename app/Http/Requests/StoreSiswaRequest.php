@@ -24,7 +24,12 @@ class StoreSiswaRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'nisn' => 'required|numeric|integer|digits:10|unique:siswas',
+            'nama' => 'required|max:255',
+            'kelas' => 'required',
+            'tglLahir' => 'required',
+            'alamat' => 'required',
+            'jenisKelamin' => 'required',
         ];
     }
 }

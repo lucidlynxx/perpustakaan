@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Peminjaman;
 use App\Http\Requests\StorePeminjamanRequest;
-use App\Http\Requests\UpdatePeminjamanRequest;
 use App\Models\Buku;
 use App\Models\Siswa;
 use Carbon\Carbon;
@@ -60,66 +59,15 @@ class PeminjamanController extends Controller
         $jumlahBuku->jumlah = $jumlahBuku->jumlah - 1;
         $jumlahBuku->save();
 
-        $validatedData = $request->validate([
-            'buku_id' => 'required|numeric|integer',
-            'siswa_id' => 'required|numeric|integer',
-            'slug' => 'required|unique:peminjamen',
-            'tglPinjam' => 'required',
-            'tglKembali' => 'required',
-            'status' => 'required',
-            'terlambat' => 'required',
-        ]);
+        $validatedData = $request->validated();
+
+        $validatedData['slug'] = $request->slug;
 
         Peminjaman::create($validatedData);
 
         alert()->success('Buat Data Sukses!', 'Data Peminjaman telah ditambahkan.');
 
         return redirect('/dashboard/data-peminjaman');
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Peminjaman  $peminjaman
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Peminjaman $peminjaman)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Peminjaman  $peminjaman
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Peminjaman $peminjaman)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \App\Http\Requests\UpdatePeminjamanRequest  $request
-     * @param  \App\Models\Peminjaman  $peminjaman
-     * @return \Illuminate\Http\Response
-     */
-    public function update(UpdatePeminjamanRequest $request, Peminjaman $peminjaman)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Peminjaman  $peminjaman
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Peminjaman $peminjaman)
-    {
-        //
     }
 
     public function menyerahkan(Peminjaman $peminjaman)

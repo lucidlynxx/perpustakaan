@@ -24,7 +24,11 @@ class UpdateSiswaRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'nama' => 'required|max:255',
+            'kelas' => 'required',
+            'tglLahir' => 'required',
+            'alamat' => 'required',
+            'jenisKelamin' => 'required',
         ];
     }
 }

@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Siswa;
 use App\Http\Requests\StoreSiswaRequest;
 use App\Http\Requests\UpdateSiswaRequest;
-use \Cviebrock\EloquentSluggable\Services\SlugService;
 
 class SiswaController extends Controller
 {
@@ -44,16 +43,7 @@ class SiswaController extends Controller
      */
     public function store(StoreSiswaRequest $request)
     {
-        $request->slug = SlugService::createSlug(Siswa::class, 'slug', $request->nama);
-
-        $validatedData = $request->validate([
-            'nisn' => 'required|numeric|integer|digits:10|unique:siswas',
-            'nama' => 'required|max:255',
-            'kelas' => 'required',
-            'tglLahir' => 'required',
-            'alamat' => 'required',
-            'jenisKelamin' => 'required',
-        ]);
+        $validatedData = $request->validated();
 
         Siswa::create($validatedData);
 
@@ -101,39 +91,28 @@ class SiswaController extends Controller
      */
     public function update(UpdateSiswaRequest $request, Siswa $data_siswa)
     {
-        $rules = [
-            'nama' => 'required|max:255',
-            'kelas' => 'required',
-            'tglLahir' => 'required',
-            'alamat' => 'required',
-            'jenisKelamin' => 'required',
-        ];
+        $validatedData = $request->validated();
 
         if ($request->slug != $data_siswa->slug) {
-            $rules['slug'] = 'required|unique:siswas';
+            $req = $request->validate([
+                'slug' => 'required|unique:siswas'
+            ]);
+
+            $validatedData['slug'] = $req['slug'];
         }
 
         if ($request->nisn != $data_siswa->nisn) {
-            $rules['nisn'] = 'required|min:10|unique:siswas';
-        }
+            $req = $request->validate([
+                'nisn' => 'required|min:10|unique:siswas'
+            ]);
 
-        $validatedData = $request->validate($rules);
+            $validatedData['nisn'] = $req['nisn'];
+        }
 
         Siswa::where('id', $data_siswa->id)->update($validatedData);
 
         alert()->success('Ubah Data Sukses!', 'Data Siswa telah diubah.');
 
         return redirect('/dashboard/data-siswa');
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Siswa  $siswa
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Siswa $siswa)
-    {
-        //
     }
 }

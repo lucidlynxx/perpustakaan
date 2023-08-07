@@ -24,7 +24,12 @@ class StorePeminjamanRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'buku_id' => 'required|numeric|integer',
+            'siswa_id' => 'required|numeric|integer',
+            'tglPinjam' => 'required',
+            'tglKembali' => 'required',
+            'status' => 'required',
+            'terlambat' => 'required',
         ];
     }
 }

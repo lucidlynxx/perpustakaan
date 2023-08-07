@@ -6,7 +6,6 @@ use App\Models\Buku;
 use App\Http\Requests\StoreBukuRequest;
 use App\Http\Requests\UpdateBukuRequest;
 use App\Models\Rak;
-use \Cviebrock\EloquentSluggable\Services\SlugService;
 
 class BukuController extends Controller
 {
@@ -46,17 +45,7 @@ class BukuController extends Controller
      */
     public function store(StoreBukuRequest $request)
     {
-        $request->slug = SlugService::createSlug(Buku::class, 'slug', $request->judul);
-
-        $validatedData = $request->validate([
-            'judul' => 'required|max:255',
-            'penulis' => 'required',
-            'penerbit' => 'required',
-            'tahun' => 'required|numeric|integer|digits:4',
-            'isbn' => 'required|numeric|integer|digits:13|unique:bukus',
-            'jumlah' => 'required|numeric',
-            'rak_id' => 'required',
-        ]);
+        $validatedData = $request->validated();
 
         Buku::create($validatedData);
 
@@ -105,40 +94,28 @@ class BukuController extends Controller
      */
     public function update(UpdateBukuRequest $request, Buku $data_buku)
     {
-        $rules = [
-            'judul' => 'required|max:255',
-            'penulis' => 'required',
-            'penerbit' => 'required',
-            'tahun' => 'required|numeric|integer|digits:4',
-            'jumlah' => 'required|numeric',
-            'rak_id' => 'required',
-        ];
+        $validatedData = $request->validated();
 
         if ($request->slug != $data_buku->slug) {
-            $rules['slug'] = 'required|unique:bukus';
+            $req = $request->validate([
+                'slug' => 'required|unique:bukus'
+            ]);
+
+            $validatedData['slug'] = $req['slug'];
         }
 
         if ($request->isbn != $data_buku->isbn) {
-            $rules['isbn'] = 'required|numeric|integer|digits:13|unique:bukus';
-        }
+            $req = $request->validate([
+                'isbn' => 'required|numeric|integer|digits:13|unique:bukus'
+            ]);
 
-        $validatedData = $request->validate($rules);
+            $validatedData['isbn'] = $req['isbn'];
+        }
 
         Buku::where('id', $data_buku->id)->update($validatedData);
 
         alert()->success('Ubah Data Sukses!', 'Data Buku telah diubah.');
 
         return redirect('/dashboard/data-buku');
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Buku  $buku
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Buku $buku)
-    {
-        //
     }
 }

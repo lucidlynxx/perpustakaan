@@ -15,8 +15,12 @@ return new class extends Migration
     {
         Schema::create('peminjamen', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('buku_id');
-            $table->foreignId('siswa_id');
+            $table->foreignId('buku_id')
+                ->constrained('bukus')
+                ->onDelete('cascade');
+            $table->foreignId('siswa_id')
+                ->constrained('siswas')
+                ->onDelete('cascade');
             $table->string('slug')->unique();
             $table->date('tglPinjam');
             $table->date('tglKembali');
